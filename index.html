@@ -1,0 +1,725 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>Balconista</title>
+<meta name="description" content="Robô de atendimento no WhatsApp para lanchonetes, assistências técnicas, salões e prestadores de serviço. Anota pedidos, marca horários, faz promoções e avisa o cliente sozinho, com painel e relatório de vendas. Teste 7 dias grátis.">
+<link rel="canonical" href="https://balconista.app.br/">
+<!-- Prévia do link no WhatsApp, Facebook e afins -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Balconista">
+<meta property="og:url" content="https://balconista.app.br/">
+<meta property="og:title" content="Balconista: seu WhatsApp vendendo sozinho, até de madrugada">
+<meta property="og:description" content="Robô de atendimento no WhatsApp para lanchonetes, assistências técnicas e salões. Anota pedidos, marca horários e avisa o cliente sozinho. Teste 7 dias grátis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: balcão de bairro. Hero com celular atendendo, planos como comandas de papel, etiqueta amarela de preço como único acento forte. */
+:root{
+  color-scheme:light;
+  --ink:#10231E;          /* verde quase preto: confiança */
+  --ink-2:#2E4740;
+  --muted:#5B6B65;
+  --paper:#F3F6F2;        /* fundo levemente esverdeado */
+  --card:#FFFFFF;
+  --line:#D9E2DC;
+  --zap:#128C4A;          /* verde de ação (WhatsApp, mais escuro para contraste) */
+  --zap-hi:#0E7A40;
+  --zap-soft:#E2F4E9;
+  --tag:#FFC93C;          /* etiqueta de preço: urgência e destaque */
+  --tag-ink:#3A2A00;
+  --chat-in:#FFFFFF;
+  --chat-out:#DCF8C6;
+  --chat-bg:#ECE5DD;
+  --f-display:"Archivo", "Arial Narrow", system-ui, sans-serif;
+  --f-body:"Figtree", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --wrap:1160px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--f-body);padding-inline:clamp(16px,4vw,40px)}
+a{color:inherit}
+img{max-width:100%}
+.wrap{max-width:var(--wrap);margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);font-stretch:118%;line-height:1.02;letter-spacing:-.01em;margin:0;text-wrap:balance}
+h2{font-size:clamp(1.9rem,4.4vw,3rem);font-weight:850}
+h3{font-size:1.25rem;font-weight:800;font-stretch:108%;line-height:1.2}
+p{margin:0}
+.lead{font-size:clamp(1.05rem,1.7vw,1.25rem);color:var(--ink-2);max-width:56ch}
+.eyebrow{font:600 .78rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--zap)}
+section{padding-block:clamp(56px,8vw,96px)}
+.sec-head{display:flex;flex-direction:column;gap:14px;max-width:760px;margin-bottom:40px}
+
+/* botões */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:700 1.05rem/1 var(--f-body);text-decoration:none;padding:17px 26px;border-radius:12px;border:2px solid transparent;cursor:pointer;transition:transform .15s ease, background .15s ease}
+.btn-go{background:var(--zap);color:#fff;box-shadow:0 6px 0 var(--zap-hi)}
+.btn-go:hover{transform:translateY(-2px);background:#13994F}
+.btn-go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--zap-hi)}
+.btn-line{border-color:var(--ink);color:var(--ink);background:transparent}
+.btn-line:hover{background:var(--ink);color:var(--paper)}
+.btn:focus-visible,a:focus-visible,summary:focus-visible,button:focus-visible{outline:3px solid var(--tag);outline-offset:3px}
+.micro{font-size:.88rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px}
+.micro span::before{content:"✓ ";color:var(--zap);font-weight:700}
+
+/* topo */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-inline:calc(-1 * clamp(16px,4vw,40px));padding-inline:clamp(16px,4vw,40px)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:66px}
+.logo{display:flex;align-items:center;gap:10px;font:900 1.35rem/1 var(--f-display);font-stretch:120%;text-decoration:none}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--zap);display:grid;place-items:center;color:#fff;font-style:normal;font-size:1rem}
+.top nav{display:flex;gap:26px;font-weight:600;font-size:.95rem}
+.top nav a{text-decoration:none;color:var(--ink-2)}
+.top nav a:hover{color:var(--zap)}
+.top .btn{padding:11px 18px;font-size:.95rem;box-shadow:0 4px 0 var(--zap-hi)}
+@media (max-width:860px){.top nav{display:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,5vw,72px);align-items:center;padding-block:clamp(40px,7vw,80px) clamp(56px,8vw,96px)}
+@media (max-width:900px){.hero{grid-template-columns:1fr}}
+.hero-copy{display:flex;flex-direction:column;gap:24px}
+.hero h1{font-size:clamp(2.4rem,5.6vw,4.3rem);font-weight:900;font-stretch:122%}
+.mark{background:linear-gradient(transparent 58%,var(--tag) 58%,var(--tag) 92%,transparent 92%);padding:0 .08em}
+.ctas{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.hero-proof{display:flex;flex-wrap:wrap;gap:10px}
+.pill{font:600 .82rem/1 var(--f-mono);padding:8px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink-2)}
+
+/* celular com a conversa */
+.phone-zone{position:relative;justify-self:center;width:min(360px,100%)}
+.phone{background:#0B1512;border-radius:42px;padding:12px;box-shadow:0 30px 60px -20px rgba(16,35,30,.45)}
+.screen{border-radius:32px;overflow:hidden;background:var(--chat-bg)}
+.chat-top{background:#075E54;color:#fff;display:flex;align-items:center;gap:10px;padding:14px 16px}
+.chat-top .av{width:34px;height:34px;border-radius:50%;background:var(--tag);color:var(--tag-ink);display:grid;place-items:center;font-weight:800;font-family:var(--f-display)}
+.chat-top b{display:block;font-size:.95rem}
+.chat-top small{opacity:.8;font-size:.75rem}
+.chat{display:flex;flex-direction:column;gap:7px;padding:14px 12px 16px;font-size:.84rem;line-height:1.38;min-height:430px}
+.b{max-width:84%;padding:7px 10px 16px;border-radius:9px;position:relative;box-shadow:0 1px 0 rgba(0,0,0,.08);white-space:pre-line}
+.b time{position:absolute;right:8px;bottom:3px;font-size:.66rem;color:#667}
+.b.in{align-self:flex-start;background:var(--chat-in);border-top-left-radius:2px}
+.b.out{align-self:flex-end;background:var(--chat-out);border-top-right-radius:2px}
+.b strong{font-weight:700}
+.b s{color:#667;text-decoration-thickness:1.5px}
+/* etapas puladas na demonstração e dias da conversa, como a etiqueta de data do WhatsApp */
+.chip-note{align-self:center;font:600 .68rem/1 var(--f-body);color:#54656F;background:#E1F2FA;border-radius:7px;padding:5px 9px;text-transform:lowercase}
+.typing{align-self:flex-start;background:var(--chat-in);border-radius:9px;padding:9px 12px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#9aa;animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.ticket-float{position:absolute;right:-18px;bottom:46px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 18px 30px -12px rgba(16,35,30,.35);font:500 .8rem/1.35 var(--f-mono);display:flex;flex-direction:column;gap:2px;animation:pop .6s ease both .4s}
+.ticket-float b{font-family:var(--f-body);font-size:.9rem;color:var(--zap)}
+@keyframes pop{from{transform:translateY(8px)}to{transform:none}}
+@media (max-width:520px){.ticket-float{right:4px;bottom:-30px}.phone-zone{margin-bottom:24px}}
+
+/* dor */
+.pain{background:var(--ink);color:var(--paper);border-radius:28px;padding:clamp(32px,5vw,56px);margin-inline:auto}
+.pain h2{color:#fff}
+.pain .lead{color:#C7D6CF}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+@media (max-width:820px){.pain-grid{grid-template-columns:1fr}}
+.pain-card{border:1px solid #2C463E;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.pain-card .clock{font:600 1.6rem/1 var(--f-mono);color:var(--tag)}
+.pain-card p{color:#C7D6CF}
+
+/* como funciona */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
+@media (max-width:820px){.steps{grid-template-columns:1fr}}
+.step{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:12px}
+.step .n{font:900 2.4rem/1 var(--f-display);font-stretch:125%;color:var(--zap)}
+.step p{color:var(--muted)}
+
+/* para quem */
+.seg-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.seg-tabs button{font:700 .98rem/1 var(--f-body);padding:13px 18px;border-radius:999px;border:2px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.seg-tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.seg-panel{display:grid;grid-template-columns:1fr 1fr;gap:28px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(24px,4vw,40px)}
+@media (max-width:820px){.seg-panel{grid-template-columns:1fr}}
+.seg-panel ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.seg-panel li{display:grid;grid-template-columns:26px 1fr;gap:8px}
+.seg-panel li::before{content:"✓";font-weight:800;color:var(--zap)}
+.seg-quote{background:var(--zap-soft);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.seg-quote .big{font:850 1.6rem/1.1 var(--f-display);font-stretch:112%}
+
+/* ganhos */
+.wins{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media (max-width:980px){.wins{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.wins{grid-template-columns:1fr}}
+.win{border-top:4px solid var(--zap);padding-top:18px;display:flex;flex-direction:column;gap:8px}
+.win .k{font:600 .78rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.win p{color:var(--muted)}
+
+/* recursos: três colunas por objetivo; o selo "novo" usa a etiqueta amarela (o único acento forte da página) */
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media (max-width:980px){.feats{grid-template-columns:1fr;max-width:640px}}
+.feat-col{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.feat-col h3{display:flex;align-items:center;gap:10px}
+.feat-ic{width:38px;height:38px;border-radius:11px;background:var(--zap-soft);display:grid;place-items:center;font-size:1.1rem;flex:none}
+.feat-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.feat-col li{display:flex;flex-direction:column;gap:3px;padding-top:14px;border-top:1px dashed var(--line)}
+.feat-col li:first-child{padding-top:0;border-top:0}
+.feat-col li b{font-weight:700;font-size:1rem;line-height:1.3}
+.feat-col li span{color:var(--muted);font-size:.93rem;line-height:1.5}
+.new{display:inline-block;vertical-align:2px;margin-left:4px;font:800 .62rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;background:var(--tag);color:var(--tag-ink);padding:4px 6px;border-radius:5px}
+
+/* painel: texto ao lado da imagem real */
+.shot{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(24px,4vw,48px);align-items:center}
+@media (max-width:900px){.shot{grid-template-columns:1fr}}
+.shot-copy{display:flex;flex-direction:column;gap:16px}
+.shot-points{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.shot-points li{position:relative;padding-left:28px;color:var(--ink-2)}
+.shot-points li::before{content:"✓";position:absolute;left:0;top:0;font-weight:800;color:var(--zap)}
+.shot-fig{margin:0;display:flex;flex-direction:column;gap:10px}
+.shot-fig img{display:block;width:100%;height:auto;border-radius:16px;border:1px solid var(--line);box-shadow:0 30px 60px -28px rgba(16,35,30,.45);background:var(--card)}
+.shot-fig figcaption{font:500 .8rem/1.3 var(--f-mono);color:var(--muted)}
+
+/* objeções */
+.objs{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media (max-width:820px){.objs{grid-template-columns:1fr}}
+.obj{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:10px}
+.obj .q{font:700 1.15rem/1.3 var(--f-body)}
+.obj .q::before{content:"“";color:var(--zap);font-family:var(--f-display);font-size:1.6rem;line-height:0;vertical-align:-.3em;margin-right:4px}
+.obj p{color:var(--ink-2)}
+
+/* planos: comandas */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+@media (max-width:980px){.plans{grid-template-columns:1fr;max-width:460px;margin-inline:auto}}
+.comanda{position:relative;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:16px 16px 0 0;padding:28px 26px 34px;display:flex;flex-direction:column;gap:18px;
+  -webkit-mask:radial-gradient(10px at 50% 100%,#0000 98%,#000) 50% 100%/22px 100% repeat-x, linear-gradient(#000 0 0) top/100% calc(100% - 9px) no-repeat;
+          mask:radial-gradient(10px at 50% 100%,#0000 98%,#000) 50% 100%/22px 100% repeat-x, linear-gradient(#000 0 0) top/100% calc(100% - 9px) no-repeat}
+.comanda.featured{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.comanda .name{font:900 1.6rem/1 var(--f-display);font-stretch:120%}
+.comanda .for{color:var(--muted);font-size:.95rem}
+.comanda.featured .for{color:#B9CBC3}
+.sticker{position:absolute;z-index:2;top:-14px;right:20px;background:var(--tag);color:var(--tag-ink);font:800 .8rem/1 var(--f-body);padding:9px 12px;border-radius:8px;transform:rotate(3deg);box-shadow:0 4px 0 rgba(0,0,0,.12)}
+.price{display:flex;align-items:baseline;gap:6px;font-family:var(--f-mono)}
+.price .cur{font-size:1rem;font-weight:500}
+.price .val{font:900 3.1rem/1 var(--f-display);font-stretch:110%;font-variant-numeric:tabular-nums}
+.price .per{font-size:.9rem;color:var(--muted)}
+.comanda.featured .price .per{color:#B9CBC3}
+.lines{list-style:none;margin:0;padding:16px 0 0;border-top:1px dashed var(--line);display:flex;flex-direction:column;gap:9px;font:400 .86rem/1.4 var(--f-mono)}
+.comanda.featured .lines{border-top-color:#35524A}
+.lines li{display:flex;gap:8px}
+.lines li::before{content:"+";color:var(--zap);font-weight:700}
+.comanda.featured .lines li::before{color:var(--tag)}
+.lines li.limit{font-weight:600}
+.comanda .btn{margin-top:auto;width:100%}
+.comanda.featured .btn-line{border-color:var(--paper);color:var(--paper)}
+.comanda.featured .btn-line:hover{background:var(--paper);color:var(--ink)}
+.per-day{font:500 .8rem/1.3 var(--f-mono);color:var(--muted);text-align:center}
+.comanda.featured .per-day{color:#B9CBC3}
+.all-plans{margin-top:28px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+
+/* confiança */
+.trust{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:clamp(24px,4vw,44px)}
+@media (max-width:860px){.trust{grid-template-columns:1fr}}
+.seals{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media (max-width:520px){.seals{grid-template-columns:1fr}}
+.seal{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;background:var(--paper)}
+.seal .ic{flex:none;width:36px;height:36px;border-radius:10px;background:var(--zap-soft);color:var(--zap);display:grid;place-items:center;font-weight:800}
+.seal b{display:block;font-size:.95rem}
+.seal span{font-size:.85rem;color:var(--muted)}
+
+/* dúvidas */
+.faq{display:flex;flex-direction:column;gap:10px;max-width:860px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0 22px}
+.faq summary{cursor:pointer;list-style:none;padding:20px 0;font-weight:700;font-size:1.05rem;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:700 1.4rem/1 var(--f-mono);color:var(--zap)}
+.faq details[open] summary::after{content:"−"}
+.faq details p{padding-bottom:20px;color:var(--ink-2);max-width:70ch}
+
+/* chamada final */
+.final{background:var(--zap);color:#fff;border-radius:28px;padding:clamp(32px,6vw,64px);display:flex;flex-direction:column;gap:20px;align-items:flex-start}
+.final h2{color:#fff;max-width:20ch}
+.final .lead{color:#E3F6EA}
+.final .btn-go{background:#fff;color:var(--zap);box-shadow:0 6px 0 #0B5F31}
+.final .btn-go:hover{background:#F3FFF7}
+.final .micro{color:#E3F6EA}
+.final .micro span::before{color:var(--tag)}
+
+/* ===== interações ===== */
+.arr{display:inline-block;transition:transform .2s ease}
+.btn:hover .arr{transform:translateX(4px)}
+.btn-ghost{color:var(--ink);font-weight:700;text-decoration:none;padding:10px 14px;border-radius:10px;border:2px solid var(--line);display:inline-flex;align-items:center;gap:8px;font-size:.95rem;transition:border-color .15s ease, background .15s ease}
+.btn-ghost:hover{border-color:var(--ink);background:var(--card)}
+.top-actions{display:flex;align-items:center;gap:10px}
+.top nav a{position:relative}
+.top nav a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--zap);transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
+.top nav a:hover::after{transform:scaleX(1)}
+.logo i{transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.logo:hover i{transform:rotate(-12deg) scale(1.08)}
+
+/* pílulas do hero trocam a conversa do celular */
+.pill{cursor:pointer;font-family:var(--f-mono);transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease}
+.pill:hover{border-color:var(--zap);transform:translateY(-2px)}
+.pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.hero-hint{font:500 .8rem/1.3 var(--f-mono);color:var(--muted)}
+.phone{transition:transform .5s ease}
+.phone-zone:hover .phone{transform:perspective(900px) rotateY(-6deg) rotateX(2deg)}
+.chat.play .b,.chat.play .typing{animation:rise .38s ease both;animation-delay:calc(var(--i, 0) * .45s)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ticket-float.bump{animation:bump .5s ease}
+@keyframes bump{40%{transform:translateY(-6px) scale(1.03)}}
+
+/* cartões */
+.pain-card{transition:border-color .2s ease, background .2s ease}
+.pain-card:hover{border-color:var(--tag);background:#15302A}
+.step{transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease}
+.step:hover{transform:translateY(-6px);border-color:var(--zap);box-shadow:0 18px 30px -18px rgba(16,35,30,.4)}
+.step .n{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.step:hover .n{transform:scale(1.15) rotate(-4deg)}
+.win{border-top:0;position:relative;padding-top:22px}
+.win::before{content:"";position:absolute;left:0;top:0;height:4px;width:36%;background:var(--zap);border-radius:2px;transition:width .3s ease}
+.win::after{content:"";position:absolute;left:0;right:0;top:1px;height:2px;background:var(--line);z-index:-1}
+.win:hover::before{width:100%}
+.obj{transition:background .2s ease, transform .2s ease}
+.obj:hover{background:var(--zap-soft);transform:translateY(-3px)}
+.seal .ic{transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.seal:hover .ic{transform:rotate(-10deg) scale(1.12)}
+.faq details{transition:border-color .15s ease}
+.faq details:hover{border-color:var(--zap)}
+.seg-tabs button{transition:background .15s ease, color .15s ease}
+.seg-tabs button:hover{background:var(--zap-soft)}
+.seg-tabs button[aria-selected="true"]:hover{background:var(--ink)}
+.seg-panel li{transition:transform .15s ease}
+.seg-panel li:hover{transform:translateX(4px)}
+
+/* comandas: o papel sobe ao passar o mouse (sombra no invólucro, porque a borda serrilhada corta sombras) */
+.plan{position:relative;transition:transform .25s ease, filter .25s ease;filter:drop-shadow(0 2px 2px rgba(16,35,30,.08))}
+.plan:hover{transform:translateY(-10px) rotate(-.6deg);filter:drop-shadow(0 22px 22px rgba(16,35,30,.22))}
+.plan.featured-wrap:hover{transform:translateY(-10px) rotate(.6deg)}
+.plan .comanda{height:100%}
+.plan:hover .sticker{animation:wiggle .5s ease}
+@keyframes wiggle{25%{transform:rotate(-4deg)}75%{transform:rotate(7deg)}}
+
+/* calculadora da perda */
+.calc{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center;border-top:1px dashed #35524A;padding-top:30px}
+@media (max-width:820px){.calc{grid-template-columns:1fr}}
+.calc-in{display:flex;flex-direction:column;gap:20px}
+.calc label{display:flex;flex-direction:column;gap:8px;font-weight:600;color:#E4EEE9}
+.calc label output{font:700 1.15rem/1 var(--f-mono);color:var(--tag)}
+.calc input[type=range]{width:100%;accent-color:var(--tag);cursor:pointer}
+.calc-out{background:#0A1814;border:1px solid #2C463E;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:8px}
+.calc-out .loss{font:900 clamp(2rem,5vw,2.8rem)/1 var(--f-display);font-stretch:110%;color:var(--tag);font-variant-numeric:tabular-nums}
+.calc-out p{color:#C7D6CF}
+.calc-out strong{color:#fff}
+@media (max-width:420px){.top .btn{padding:10px 12px;font-size:.88rem}.btn-ghost{padding:8px 10px;font-size:.88rem}.logo span{font-size:1.15rem}}
+
+footer{padding-block:40px 96px;color:var(--muted);font-size:.9rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;border-top:1px solid var(--line);margin-top:56px}
+footer a{text-decoration:none}
+footer nav{display:flex;gap:20px;flex-wrap:wrap}
+
+/* voltar ao topo: aparece depois que a pessoa desce a página */
+.to-top{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;display:inline-flex;align-items:center;gap:8px;padding:12px 16px 12px 13px;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font:700 .92rem/1 var(--f-body);box-shadow:0 8px 24px rgba(16,35,30,.28);transition:opacity .2s ease,transform .2s ease,visibility .2s}
+.to-top svg{width:20px;height:20px;flex:none}
+.to-top:hover{background:var(--zap)}
+.to-top:focus-visible{outline:3px solid var(--tag);outline-offset:3px}
+.to-top.is-hidden{opacity:0;visibility:hidden;transform:translateY(12px)}
+@media (max-width:600px){.to-top{padding:13px}.to-top span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+</style>
+
+<header class="top" id="topo">
+  <div class="wrap">
+    <a class="logo" href="#inicio"><i aria-hidden="true">B</i><span data-brand>Balconista</span></a>
+    <nav aria-label="Seções">
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#para-quem">Para quem é</a>
+      <a href="#recursos">Recursos</a>
+      <a href="#planos">Planos</a>
+      <a href="#duvidas">Dúvidas</a>
+    </nav>
+    <div class="top-actions">
+      <a class="btn-ghost" href="#" data-login>Entrar</a>
+      <a class="btn btn-go" href="#planos" data-cta="topo">Testar grátis</a>
+    </div>
+  </div>
+</header>
+
+<main id="inicio" class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Atendente automático no WhatsApp</span>
+      <h1>Seu WhatsApp <span class="mark">vendendo sozinho</span>, até de madrugada.</h1>
+      <p class="lead">O <strong data-brand>Balconista</strong> responde na hora, anota o pedido certinho, marca horário e avisa o cliente quando está pronto. Atende várias conversas ao mesmo tempo. Você cuida do balcão e ele cuida das mensagens.</p>
+      <div class="ctas">
+        <a class="btn btn-go" href="#planos" data-cta="hero">Quero testar 7 dias grátis <span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn-line" href="#como-funciona">Ver como funciona</a>
+      </div>
+      <p class="micro"><span>Sem cartão para testar</span><span>Ajuda para configurar</span><span>Cancele quando quiser</span></p>
+      <div class="hero-proof" role="group" aria-label="Ver exemplo de conversa por tipo de negócio">
+        <button type="button" class="pill" data-show="food" aria-pressed="true">🍔 Lanchonetes e delivery</button>
+        <button type="button" class="pill" data-show="fix" aria-pressed="false">🔧 Assistências técnicas</button>
+        <button type="button" class="pill" data-show="beauty" aria-pressed="false">✂️ Salões e barbearias</button>
+      </div>
+      <p class="hero-hint">Passe o mouse ou toque para ver o robô atendendo cada tipo de negócio.</p>
+    </div>
+
+    <div class="phone-zone" aria-label="Exemplo de conversa do robô com um cliente às 23h47">
+      <div class="phone">
+        <div class="screen">
+          <div class="chat-top"><span class="av" id="chat-av">L</span><div><b id="chat-name">Lanchonete do Zé</b><small>online agora</small></div></div>
+          <!-- Conversas iguais às do robô de verdade: menu numerado, promoção riscada, avisos de status -->
+          <div class="chat" data-chat="food">
+            <div class="b out">Boa noite! Ainda dá pra pedir? 🙏<time>23:47</time></div>
+            <div class="b in">Olá, Carla! 👋 Bem-vindo(a) ao <strong>Lanchonete do Zé</strong>.
+Escolha uma categoria:
+1 - Lanches 🔥
+2 - Porções
+3 - Bebidas<time>23:47</time></div>
+            <div class="b out">1<time>23:47</time></div>
+            <div class="b in"><strong>Lanches</strong>
+🔥 Toda quarta: 20% de desconto em todos os itens
+1 - X-Bacon — de <s>R$ 30,00</s> por <strong>R$ 24,00</strong> 🔥
+2 - X-Salada — de <s>R$ 25,00</s> por <strong>R$ 20,00</strong> 🔥<time>23:47</time></div>
+            <div class="chip-note">quantidade, entrega e Pix</div>
+            <div class="b in"><strong>Pedido nº 1042 confirmado!</strong> ✅
+2x X-Bacon — R$ 48,00
+Entrega — R$ 6,00
+<strong>Total: R$ 54,00</strong>
+Te aviso aqui quando sair pra entrega. 😉<time>23:49</time></div>
+          </div>
+          <div class="chat" data-chat="fix" hidden>
+            <div class="chip-note">segunda</div>
+            <div class="b in">Olá, Rafael! Recebemos seu iPhone 11 aqui na Conserta Fácil. Sua ordem de serviço é a nº 318. Te avisamos por aqui a cada etapa.<time>09:40</time></div>
+            <div class="b in">Rafael, o orçamento da OS 318 está pronto. Responda esta mensagem para aprovar ou tirar dúvidas.<time>15:02</time></div>
+            <div class="chip-note">hoje</div>
+            <div class="b in">Boa notícia, Rafael! Seu iPhone 11 (OS 318) está pronto para retirada na Conserta Fácil.<time>09:55</time></div>
+            <div class="b out">Show! Passo aí às 17h 🙌<time>10:12</time></div>
+          </div>
+          <div class="chat" data-chat="beauty" hidden>
+            <div class="b out">Oi! Quero marcar um horário<time>21:05</time></div>
+            <div class="b in">Qual serviço?
+1 - Corte feminino — R$ 80,00
+2 - Escova — R$ 60,00
+3 - Manicure — R$ 35,00<time>21:05</time></div>
+            <div class="b out">1<time>21:05</time></div>
+            <div class="b in">Com quem você prefere?
+1 - Ana
+2 - Bruno
+0 - Sem preferência<time>21:05</time></div>
+            <div class="b out">1<time>21:05</time></div>
+            <div class="b in">Horários livres sex 10/10:
+1 - 09:00
+2 - 10:30
+3 - 14:00<time>21:06</time></div>
+            <div class="b out">2<time>21:06</time></div>
+            <div class="b in"><strong>Agendado! ✅</strong>
+Corte feminino com Ana, sex 10/10 às 10:30.<time>21:06</time></div>
+          </div>
+        </div>
+      </div>
+      <div class="ticket-float" role="note" id="chat-float"><b>🔔 Novo pedido no painel</b>Nº 1042 · R$ 54,00 · Pix<br>Entrega · 🖨 cupom impresso</div>
+    </div>
+  </div>
+
+  <!-- DOR -->
+  <section class="pain" aria-labelledby="pain-title">
+    <div class="sec-head">
+      <span class="eyebrow" style="color:var(--tag)">A conta que ninguém faz</span>
+      <h2 id="pain-title">Cliente que espera resposta não espera muito. Ele pede no concorrente.</h2>
+      <p class="lead">Você não perde venda por falta de produto bom. Perde porque estava ocupado na chapa, na bancada ou na cadeira do cliente quando o WhatsApp tocou.</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card"><span class="clock">14 min</span><h3>sem responder</h3><p>O cliente perguntou o preço, ninguém viu, e ele fechou com quem respondeu primeiro.</p></div>
+      <div class="pain-card"><span class="clock">"Era sem cebola!"</span><h3>pedido anotado errado</h3><p>Áudio, mensagem picada, letra no papel. Prejuízo, retrabalho e cliente bravo.</p></div>
+      <div class="pain-card"><span class="clock">Cadeira vazia</span><h3>cliente que esqueceu o horário</h3><p>Horário marcado de boca não tem lembrete. A falta vira hora perdida e dinheiro que não volta.</p></div>
+    </div>
+    <div class="calc" aria-labelledby="calc-title">
+      <div class="calc-in">
+        <h3 id="calc-title" style="color:#fff">Faça a conta da sua loja</h3>
+        <label for="calc-lost">Vendas que escapam por semana por demora na resposta
+          <output id="calc-lost-out" for="calc-lost">5 vendas</output>
+          <input id="calc-lost" type="range" min="1" max="40" value="5">
+        </label>
+        <label for="calc-ticket">Valor médio de cada venda
+          <output id="calc-ticket-out" for="calc-ticket">R$ 40</output>
+          <input id="calc-ticket" type="range" min="10" max="300" step="5" value="40">
+        </label>
+      </div>
+      <div class="calc-out" role="status" aria-live="polite">
+        <span>Você deixa de vender pelo menos</span>
+        <span class="loss" id="calc-loss">R$ 800</span>
+        <span>por mês.</span>
+        <p id="calc-verdict">O plano Starter custa <strong>R$ 49,90</strong>. Recuperando só <strong>2 vendas</strong> por mês, ele já se paga.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section id="como-funciona" aria-labelledby="how-title">
+    <div class="sec-head">
+      <span class="eyebrow">Como funciona</span>
+      <h2 id="how-title">Três passos e seu WhatsApp passa a trabalhar por você.</h2>
+      <p class="lead">Você continua usando o mesmo número e o mesmo celular. Nada de aplicativo novo para o seu cliente baixar.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><h3>Conecte seu WhatsApp</h3><p>Abra o painel, aponte a câmera do celular para o QR Code e pronto. Igual a usar o WhatsApp no computador.</p></div>
+      <div class="step"><span class="n">2</span><h3>Coloque seus produtos ou serviços</h3><p>Comece por um modelo pronto (pizzaria, lanchonete, japonês) e troque os preços, ou cadastre seus serviços com duração. Se travar, a gente faz junto com você.</p></div>
+      <div class="step"><span class="n">3</span><h3>O robô atende, você acompanha</h3><p>Ele responde, anota, confirma e avisa o cliente. Tudo aparece no painel, com relatório do dia e do mês.</p></div>
+    </div>
+  </section>
+
+  <!-- PARA QUEM -->
+  <section id="para-quem" aria-labelledby="who-title">
+    <div class="sec-head">
+      <span class="eyebrow">Para quem é</span>
+      <h2 id="who-title">Feito para o comércio do bairro. Escolha o seu:</h2>
+    </div>
+    <div class="seg-tabs" role="tablist" aria-label="Tipo de negócio">
+      <button type="button" role="tab" id="t-food" aria-controls="p-food" aria-selected="true">🍔 Lanchonete e delivery</button>
+      <button type="button" role="tab" id="t-fix" aria-controls="p-fix" aria-selected="false">🔧 Assistência técnica</button>
+      <button type="button" role="tab" id="t-beauty" aria-controls="p-beauty" aria-selected="false">✂️ Salão, barbearia e serviços</button>
+    </div>
+    <div class="seg-panel" role="tabpanel" id="p-food" aria-labelledby="t-food">
+      <ul>
+        <li>Cardápio no WhatsApp: o cliente escolhe, monta o carrinho e confirma sozinho. Pizza com tamanho, meio a meio e borda.</li>
+        <li>Calcula total, taxa de entrega (fixa ou por bairro), troco e manda sua chave Pix.</li>
+        <li>Promoções com preço riscado: por um tempo, sem prazo ou "toda quarta é dia de pizza". Começam e terminam sozinhas.</li>
+        <li>Cupom na impressora térmica assim que o cliente confirma, e tela da cozinha com os pedidos em preparo.</li>
+        <li>Entregas em lotes com o motoboy, confirmação de entrega pelo cliente e o acerto do motoboy com recibo.</li>
+        <li>Avisa "saiu para entrega" e "pronto para retirar" sem você digitar nada.</li>
+      </ul>
+      <div class="seg-quote"><span class="big">Pedido certo, sem áudio de 3 minutos.</span><p>Tudo anotado com quantidade, observação ("sem cebola") e forma de pagamento.</p></div>
+    </div>
+    <div class="seg-panel" role="tabpanel" id="p-fix" aria-labelledby="t-fix" hidden>
+      <ul>
+        <li>Cadastre a ordem de serviço e o cliente recebe a confirmação no WhatsApp.</li>
+        <li>A cada etapa (em análise, orçamento pronto, em reparo, pronto) ele é avisado sozinho.</li>
+        <li>Cliente quer saber "e aí, ficou pronto?" O robô responde com a situação na hora.</li>
+        <li>Histórico de cada cliente e de cada aparelho guardado para sempre.</li>
+        <li>Você escreve as mensagens de cada etapa do seu jeito; o robô varia as palavras para não parecer disparo automático.</li>
+      </ul>
+      <div class="seg-quote"><span class="big">Chega de "já ficou pronto?" o dia inteiro.</span><p>O cliente fica sabendo antes de perguntar, e você não para o conserto para responder.</p></div>
+    </div>
+    <div class="seg-panel" role="tabpanel" id="p-beauty" aria-labelledby="t-beauty" hidden>
+      <ul>
+        <li>Agenda por profissional: o cliente vê só os horários livres e marca sozinho.</li>
+        <li>Cada serviço com sua duração, então nunca cai dois clientes no mesmo horário.</li>
+        <li>O profissional recebe a agenda do dia e um lembrete antes de cada cliente.</li>
+        <li>Remarcar e cancelar pelo WhatsApp, dentro do prazo que você definir.</li>
+        <li>Se você quiser, o cliente recebe um lembrete antes do horário e confirma, remarca ou cancela respondendo um número.</li>
+      </ul>
+      <div class="seg-quote"><span class="big">Agenda cheia, sem ficar no celular entre um cliente e outro.</span><p>Com controle de faltas e relatório de comissão por profissional.</p></div>
+    </div>
+  </section>
+
+  <!-- RECURSOS: só o que o sistema faz hoje (os números vêm dos testes e das regras do próprio sistema) -->
+  <section id="recursos" aria-labelledby="feat-title">
+    <div class="sec-head">
+      <span class="eyebrow">Recursos</span>
+      <h2 id="feat-title">Tudo o que a loja precisa, num lugar só.</h2>
+      <p class="lead">Do primeiro "oi" no WhatsApp até o fechamento do mês. Sem instalar nada: funciona no navegador do computador e do celular.</p>
+    </div>
+    <div class="feats">
+      <article class="feat-col" aria-labelledby="fc-sell">
+        <h3 id="fc-sell"><span class="feat-ic" aria-hidden="true">💰</span>Vender mais</h3>
+        <ul>
+          <li><b>Promoções com preço riscado <span class="new">novo</span></b><span>Desconto em % ou em R$, por um tempo, sem prazo ou só em alguns dias da semana. Vale para um item ou para a categoria inteira, e começa e termina sozinha.</span></li>
+          <li><b>Cardápio pelo link</b><span>Uma página com os itens e os preços. O cliente escolhe lá e manda o pedido no seu WhatsApp com um código.</span></li>
+          <li><b>Quem desistiu no WhatsApp</b><span>Relatório de quem montou o carrinho e não confirmou, com os itens e o valor. Bom para chamar de volta.</span></li>
+          <li><b>Avaliação depois da entrega</b><span>O cliente dá uma nota de 1 a 5 para o pedido e para o atendimento, com comentário.</span></li>
+        </ul>
+      </article>
+      <article class="feat-col" aria-labelledby="fc-run">
+        <h3 id="fc-run"><span class="feat-ic" aria-hidden="true">🛵</span>Rodar a loja sem correria</h3>
+        <ul>
+          <li><b>Até 8 conversas ao mesmo tempo</b><span>Na hora do pico, ninguém espera na fila: cada cliente é atendido na ordem da própria conversa.</span></li>
+          <li><b>Cozinha e impressora</b><span>Tela da cozinha com os pedidos em preparo e cupom na impressora térmica (80 ou 58 mm) assim que o cliente confirma.</span></li>
+          <li><b>Entregas e motoboys</b><span>Lotes com a ordem das entregas, o cliente confirma que recebeu e o acerto de cada motoboy sai com recibo.</span></li>
+          <li><b>Mesas e garçons</b><span>Comanda no celular do garçom, cada rodada direto na cozinha e conta dividida. No plano Pro.</span></li>
+        </ul>
+      </article>
+      <article class="feat-col" aria-labelledby="fc-ctrl">
+        <h3 id="fc-ctrl"><span class="feat-ic" aria-hidden="true">📊</span>Controle e segurança</h3>
+        <ul>
+          <li><b>Relatório que fala português <span class="new">novo</span></b><span>"Você vendeu R$ X em N pedidos", comparado com o período anterior, o que mais vendeu e como pagaram. Exporta para o Excel.</span></li>
+          <li><b>Equipe com acesso certo</b><span>Cada pessoa vê só o que você liberar. Garçom e cozinha entram com PIN. Esconda as telas que a loja não usa <span class="new">novo</span></span></li>
+          <li><b>Nada é apagado</b><span>Pedido cancelado, item tirado, pagamento desfeito: tudo fica no histórico, com quem fez e quando.</span></li>
+          <li><b>Conta protegida <span class="new">novo</span></b><span>Verificação em duas etapas com código do celular, para você e para quem você exigir da equipe.</span></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- O PAINEL: imagem real da tela (dados de exemplo) -->
+  <section aria-labelledby="shot-title" class="shot-sec">
+    <div class="shot">
+      <div class="shot-copy">
+        <span class="eyebrow">O painel</span>
+        <h2 id="shot-title">Abra e entenda o seu mês em 5 segundos.</h2>
+        <p class="lead">O relatório de vendas abre com uma frase, não com uma planilha.</p>
+        <ul class="shot-points">
+          <li><b>Quanto vendeu e em quantos pedidos</b>, já sem os cancelados, que aparecem à parte.</li>
+          <li><b>Subiu ou caiu</b> em relação ao período anterior, do mesmo tamanho.</li>
+          <li><b>Quanto fica para a loja</b>, descontando as taxas da maquininha e a entrega do motoboy, se você quiser.</li>
+        </ul>
+      </div>
+      <figure class="shot-fig">
+        <img src="/img/painel-vendas.webp" width="935" height="589" loading="lazy" decoding="async"
+          alt="Tela de Relatórios do painel: Você vendeu R$ 16.776,00 em 295 pedidos, 2% a mais que nos 30 dias anteriores, com os quadros Vendido, Pedidos, Ticket médio e Cancelados e o gráfico de vendas por dia.">
+        <figcaption>Tela real do painel, com dados de uma loja de exemplo.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- GANHOS -->
+  <section aria-labelledby="wins-title">
+    <div class="sec-head">
+      <span class="eyebrow">O que muda na sua rotina</span>
+      <h2 id="wins-title">Mais venda, menos correria.</h2>
+    </div>
+    <div class="wins">
+      <div class="win"><span class="k">Lucro</span><h3>Vende até fechado</h3><p>Responde em segundos, de dia, de noite e no domingo. Ninguém fica sem resposta.</p></div>
+      <div class="win"><span class="k">Tempo livre</span><h3>Menos horas no celular</h3><p>As perguntas de sempre o robô responde. Você só entra quando o cliente pede "atendente".</p></div>
+      <div class="win"><span class="k">Simplicidade</span><h3>Se usa WhatsApp, já sabe usar</h3><p>Painel com botões grandes e palavras simples. Sem planilha, sem sistema complicado.</p></div>
+      <div class="win"><span class="k">Controle</span><h3>Tudo registrado</h3><p>Pedidos, cancelamentos, faltas e faturamento do dia e do mês. Nada se perde.</p></div>
+    </div>
+  </section>
+
+  <!-- OBJEÇÕES -->
+  <section aria-labelledby="obj-title">
+    <div class="sec-head">
+      <span class="eyebrow">Sem enrolação</span>
+      <h2 id="obj-title">"Mas e se...?" A gente responde.</h2>
+    </div>
+    <div class="objs">
+      <div class="obj"><span class="q">Não sei mexer em computador.</span><p>Se você manda áudio e figurinha no WhatsApp, você consegue. E no começo a gente configura junto com você, por chamada, sem custo extra.</p></div>
+      <div class="obj"><span class="q">É muito caro para mim.</span><p>O plano de entrada sai por <strong>menos de R$ 1,70 por dia</strong>, menos que um salgado. Se ele salvar um único pedido por semana, já se pagou.</p></div>
+      <div class="obj"><span class="q">Meu cliente não gosta de falar com robô.</span><p>Ele gosta de resposta rápida. E quando quiser falar com gente, é só digitar "atendente" que o robô sai da conversa e te chama.</p></div>
+      <div class="obj"><span class="q">E se eu não gostar?</span><p>Teste 7 dias sem colocar cartão. Depois, sem fidelidade e sem multa: cancela com um clique no painel.</p></div>
+    </div>
+  </section>
+
+  <!-- PLANOS -->
+  <section id="planos" aria-labelledby="plans-title">
+    <div class="sec-head">
+      <span class="eyebrow">Planos</span>
+      <h2 id="plans-title">Escolha o tamanho do seu movimento.</h2>
+      <p class="lead">Todos começam com 7 dias grátis. Você só paga se continuar.</p>
+    </div>
+    <div class="plans">
+      <div class="plan"><article class="comanda" aria-labelledby="pl-starter">
+        <h3 class="name" id="pl-starter">Starter</h3>
+        <p class="for">Para quem está começando e quer parar de perder mensagem.</p>
+        <div class="price"><span class="cur">R$</span><span class="val">49,90</span><span class="per">/mês</span></div>
+        <ul class="lines">
+          <li class="limit">Até 500 pedidos ou agendamentos por mês</li>
+          <li>1 número de WhatsApp</li>
+          <li>2 usuários no painel (você e mais uma pessoa)</li>
+          <li>1 módulo: cardápio, pedidos ou agenda</li>
+          <li>Avisos automáticos de status para o cliente</li>
+          <li>Promoções, cardápio pelo link e cupom na impressora</li>
+          <li>Painel com relatório de vendas</li>
+          <li>Suporte pelo WhatsApp em horário comercial</li>
+        </ul>
+        <a class="btn btn-line" href="#" data-plan="Starter">Começar com o Starter</a>
+        <p class="per-day">R$ 1,66 por dia</p>
+      </article></div>
+
+      <div class="plan featured-wrap"><span class="sticker">Recomendado</span><article class="comanda featured" aria-labelledby="pl-growth">
+        <h3 class="name" id="pl-growth">Growth</h3>
+        <p class="for">Para o comércio que já tem movimento e quer crescer sem contratar.</p>
+        <div class="price"><span class="cur">R$</span><span class="val">89,90</span><span class="per">/mês</span></div>
+        <ul class="lines">
+          <li class="limit">Até 1.500 pedidos ou agendamentos por mês</li>
+          <li>Tudo do Starter</li>
+          <li>5 usuários no painel, cada um só com o acesso que você liberar</li>
+          <li>Todos os módulos juntos: cardápio, pedidos e agenda</li>
+          <li>Agenda com vários profissionais e lembretes</li>
+          <li>Relatórios completos e exportação para Excel</li>
+          <li>Cliente remarca e cancela sozinho, com motivo registrado</li>
+          <li>Configuração feita junto com você por chamada</li>
+        </ul>
+        <a class="btn btn-go" href="#" data-plan="Growth">Quero o Growth <span class="arr" aria-hidden="true">→</span></a>
+        <p class="per-day">R$ 3,00 por dia</p>
+      </article></div>
+
+      <div class="plan"><article class="comanda" aria-labelledby="pl-pro">
+        <h3 class="name" id="pl-pro">Pro</h3>
+        <p class="for">Para quem tem muito movimento e quer o atendimento no piloto automático.</p>
+        <div class="price"><span class="cur">R$</span><span class="val">149,90</span><span class="per">/mês</span></div>
+        <ul class="lines">
+          <li class="limit">Até 5.000 pedidos ou agendamentos por mês</li>
+          <li>Tudo do Growth</li>
+          <li>15 usuários no painel</li>
+          <li>Mesas e garçons: comanda no celular, cada rodada direto na cozinha e conta dividida</li>
+          <li>Garçom e cozinha entram com PIN e não contam como usuário</li>
+          <li>Em breve: inteligência artificial que entende mensagem escrita ("quero 2 x-bacon sem cebola")</li>
+          <li>Avisos no WhatsApp de cada atendente ou profissional</li>
+          <li>A gente cadastra seu cardápio ou agenda para você</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <a class="btn btn-line" href="#" data-plan="Pro">Quero o Pro</a>
+        <p class="per-day">R$ 5,00 por dia</p>
+      </article></div>
+    </div>
+    <div class="all-plans micro"><span>7 dias grátis em todos os planos</span><span>Sem fidelidade e sem multa</span><span>Cancele com 1 clique no painel</span><span>Troque de plano quando quiser</span></div>
+  </section>
+
+  <!-- CONFIANÇA -->
+  <section aria-labelledby="trust-title">
+    <div class="trust">
+      <div class="sec-head" style="margin:0">
+        <span class="eyebrow">Segurança</span>
+        <h2 id="trust-title">Seus dados e os dos seus clientes, bem guardados.</h2>
+        <p class="lead">Tudo o que a sua loja registra fica guardado com criptografia, com cópia de segurança todo dia. E só entra quem você liberar.</p>
+      </div>
+      <div class="seals">
+        <div class="seal"><span class="ic" aria-hidden="true">🔒</span><div><b>Criptografia</b><span>Na conexão (HTTPS) e nos dados guardados no servidor.</span></div></div>
+        <div class="seal"><span class="ic" aria-hidden="true">💳</span><div><b>Pix ou cartão</b><span>Pague a assinatura do jeito que preferir.</span></div></div>
+        <div class="seal"><span class="ic" aria-hidden="true">📱</span><div><b>Verificação em duas etapas</b><span>Além da senha, um código do celular para entrar.</span></div></div>
+        <div class="seal"><span class="ic" aria-hidden="true">💾</span><div><b>Cópia todo dia</b><span>Backup diário, com uma cópia guardada fora do servidor.</span></div></div>
+        <div class="seal"><span class="ic" aria-hidden="true">🗂</span><div><b>Nada é apagado</b><span>Tudo fica no histórico, com quem fez e quando.</span></div></div>
+        <div class="seal"><span class="ic" aria-hidden="true">🛡</span><div><b>Seus dados pela LGPD</b><span>Os dados dos seus clientes são só seus.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DÚVIDAS -->
+  <section id="duvidas" aria-labelledby="faq-title">
+    <div class="sec-head">
+      <span class="eyebrow">Dúvidas</span>
+      <h2 id="faq-title">Perguntas que todo lojista faz.</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Já sou cliente. Onde eu entro?</summary><p>Clique em <strong>Entrar</strong>, no alto da página, e use o e-mail e a senha do cadastro. Esqueceu a senha? Na tela de entrada tem "Esqueci minha senha".</p></details>
+      <details><summary>Preciso trocar de número ou de celular?</summary><p>Não. Você conecta o mesmo WhatsApp que já usa, lendo um QR Code, igual ao WhatsApp no computador. Recomendamos usar o número da loja, e não o seu pessoal.</p></details>
+      <details><summary>O robô responde até quando a loja está fechada?</summary><p>Sim. Ele atende 24 horas. Você escolhe se aceita pedidos fora do horário ou se ele avisa que a loja está fechada e quando abre.</p></details>
+      <details><summary>E se o cliente quiser falar com uma pessoa?</summary><p>Ele digita "atendente" e o robô para de responder naquela conversa. Você recebe o aviso no painel. Se você responder pelo celular, o robô também sai sozinho daquela conversa.</p></details>
+      <details><summary>Meu número pode ser bloqueado pelo WhatsApp?</summary><p>O sistema usa o WhatsApp do seu celular com regras de proteção: responde só quem te chamou, manda mensagens com intervalos naturais e não permite disparo em massa. Mesmo assim, o WhatsApp pode restringir números que recebem muitas denúncias de spam, então use para atender seus clientes, nunca para propaganda em massa.</p></details>
+      <details><summary>O que acontece se eu passar do limite do plano?</summary><p>Nada para de funcionar: o sistema não corta pedidos nem deixa cliente sem resposta. Se o seu movimento crescer além do plano, é só trocar de plano com a gente.</p></details>
+      <details><summary>Como funciona o teste grátis e a cobrança?</summary><p>Você testa 7 dias sem cartão. A partir do 6º dia, já dá para pagar a primeira mensalidade, para o painel não parar. Pague por <strong>Pix</strong> todo mês ou cadastre o <strong>cartão</strong> para a cobrança sair sozinha. A cobrança automática do cartão se desliga com um clique no painel, sem multa.</p></details>
+      <details><summary>Funciona com impressora térmica?</summary><p>Sim. O cupom do pedido sai sozinho na impressora térmica (papel de 80 ou 58 mm) ligada ao computador da loja, assim que o cliente confirma pelo WhatsApp. Dá para escolher 1 ou 2 vias e reimprimir quando o cliente altera o pedido.</p></details>
+      <details><summary>Dá para usar pelo celular?</summary><p>Sim. O painel funciona no navegador do computador, do tablet e do celular, sem instalar nada. O garçom e a cozinha podem usar um celular ou tablet da loja e entrar só com um PIN.</p></details>
+    </div>
+  </section>
+
+  <!-- CHAMADA FINAL -->
+  <section aria-labelledby="final-title" style="padding-bottom:0">
+    <div class="final">
+      <h2 id="final-title">Hoje à noite, quem vai responder seu WhatsApp?</h2>
+      <p class="lead">Coloque o <span data-brand>Balconista</span> no balcão em 10 minutos e veja a diferença ainda esta semana.</p>
+      <a class="btn btn-go" href="#planos" data-cta="final">Começar meus 7 dias grátis <span class="arr" aria-hidden="true">→</span></a>
+      <p class="micro"><span>Sem cartão</span><span>Sem fidelidade</span><span>Ajuda para configurar</span></p>
+    </div>
+  </section>
+
+  <footer>
+    <span>© <span id="year">2026</span> <span data-brand>Balconista</span>. Atendimento automático para o comércio local.</span>
+    <nav aria-label="Links legais">
+      <a href="#" data-login>Entrar na minha conta</a>
+      <a href="#" data-link="termos">Termos de uso</a>
+      <a href="#" data-link="privacidade">Privacidade</a>
+      <a href="#" data-cta="contato">Fale com a gente</a>
+    </nav>
+  </footer>
+</main>
+
+<a class="to-top" id="to-top" href="#topo" aria-label="Voltar ao topo da página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span>Topo</span></a>
+
+<script src="/js/site.js"></script>
